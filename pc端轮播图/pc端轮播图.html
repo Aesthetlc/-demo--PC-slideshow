@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        ul {
+            list-style: none;
+        }
+        
+        .box {
+            width: 730px;
+            height: 454px;
+            padding: 8px;
+            border: 1px solid green;
+            margin: 100px auto;
+        }
+        
+        .inner {
+            position: relative;
+            overflow: hidden;
+            height: 454px;
+        }
+        
+        #imglist {
+            width: 700%;
+            position: absolute;
+            left: 0;
+            transition: left 300ms linear;
+        }
+        
+        li {
+            float: left;
+        }
+        
+        .list {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            margin-left: -85px;
+        }
+        
+        .list i {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #333;
+            float: left;
+            font-style: normal;
+            line-height: 20px;
+            font-size: 14px;
+            text-align: center;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .list i:last-child {
+            margin-right: 0;
+        }
+        
+        .list i.current {
+            background-color: skyblue;
+            color: #fff;
+        }
+        
+        .arrow {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            margin-top: -30px;
+        }
+        
+        .arrow-left,
+        .arrow-right {
+            width: 30px;
+            height: 60px;
+            position: absolute;
+            font: 20px/60px "consolas";
+            color: #fff;
+            background-color: rgba(0, 0, 0, .3);
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .arrow-right {
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box" id="box">
+        <div class="inner" id="inner">
+            <ul id="imglist">
+                <li>
+                    <a href="#"><img src="images/1.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="images/2.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="images/3.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="images/4.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="images/5.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="images/6.jpg" alt=""></a>
+                </li>
+            </ul>
+            <div class="list">
+                <i class="current">1</i>
+                <i>2</i>
+                <i>3</i>
+                <i>4</i>
+                <i>5</i>
+                <i>6</i>
+            </div>
+            <div class="arrow">
+                <span class="arrow-left">&lt;</span>
+                <span class="arrow-right">&gt;</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    // 获取DOM
+    var yuan = document.querySelectorAll("i");
+    var li = document.querySelector("ul li");
+    var ul = document.querySelector("ul");
+    var imgs = document.querySelector("#imglist");
+    var right = document.querySelector(".arrow-right");
+    var left = document.querySelector(".arrow-left");
+    var box = document.querySelector(".box");
+    window.onload = function() {
+        //------------------------------------这里是点击小圆圈，控制图片的切换
+        //循环小圆点 注册小圆点
+        for (var i = 0; i < yuan.length; i++) {
+            //我们需要这里面的i 必须提前拿出来，要不最后i的值就是最后一个数值了
+            yuan[i].num = i;
+            //注册事件
+            yuan[i].onmouseover = function() {
+                // 现在要循环将样式移除
+                for (var j = 0; j < yuan.length; j++) {
+                    yuan[j].classList.remove("current");
+                }
+                //这里是为了将点击的小圆点 增加上样式
+                this.classList.add("current");
+                var num = this.num;
+                //到这里的思路就是点击小圆点 将图片进行移动，向左面移动，上面css做了相应的定位操作
+                //移动的距离就是 n 乘以 一张图片的宽度，
+                //n 就是选择的小圆点的 坐标-----i(num)
+                //图片的宽度 box.offsetWidth
+                var left = num * li.offsetWidth;
+                // console.log(num, box.offsetWidth, left);
+                imgs.style.left = `-${left}px`;
+
+                //这里小原点联动左右按钮
+                for (var p = 0; p < yuan.length; p++) {
+                    //清除全部样式（小圆点）
+                    yuan[p].classList.remove("current");
+                }
+                //给当前的小圆点增加样式
+                yuan[num].classList.add("current");
+                //这里这个位置比较关键，在上面设置完样式之后，记得将此num赋值给全局的index
+                index = this.num;
+
+
+            }
+        }
+        //------------------------------------以上是点击小圆圈，控制图片的切换
+        //------------------------------------下面是开始右面轮播，控制图片的切换
+        //首先定义一个全局的index，这个index的作用依旧是控制图片的切换
+        var index = 0;
+        right.onclick = function() {
+            index++;
+            //这里要对index做一下判断，如果不做判断，可以试想一下，
+            //只要你一点击，index就会无限的增大，增大到你“无法自拔”
+            if (index == ul.children.length) {
+                //如果坐标为6的话，显示应该显示第1张图片，所以要复位 即index=0
+                index = 0;
+            }
+            var left = index * li.offsetWidth;
+            // console.log(index, box.offsetWidth, left);
+            imgs.style.left = `-${left}px`;
+
+            //点击右面增加联动小圆点的效果
+            for (var n = 0; n < yuan.length; n++) {
+                //清除全部样式（小圆点）
+                yuan[n].classList.remove("current");
+            }
+            //给当前的小圆点增加样式
+            yuan[index].classList.add("current");
+        };
+        //------------------------------------以上是结束右面轮播，控制图片的切换
+
+        //------------------------------------下面是开始左面轮播，控制图片的切换
+        left.onclick = function() {
+            index--;
+            //这里同右点击一样，需要做一下判断，
+            console.log(index);
+            if (index == -1) {
+                index = ul.children.length - 1;
+            }
+            var left = index * li.offsetWidth;
+            // console.log(index, box.offsetWidth, left);
+            // console.log(left);
+            imgs.style.left = `-${left}px`;
+
+            //这个位置做的是 左面点击联动小圆点
+            for (var m = 0; m < yuan.length; m++) {
+                //清除全部样式（小圆点）
+                yuan[m].classList.remove("current");
+            }
+            //给当前的小圆点增加样式
+            yuan[index].classList.add("current");
+        };
+        //------------------------------------上面是结束左面轮播，控制图片的切换
+        //------------------------------------开始设置自动轮播
+        var timer = setInterval(function() {
+            right.onclick();
+        }, 1000);
+        //------------------------------------以上是自动轮播结束
+        //------------------------------------设置鼠标进来就停止开始
+        box.onmouseover = function() {
+            clearInterval(timer);
+        };
+        //------------------------------------设置鼠标进来就停止结束
+        //------------------------------------设置鼠标出去就停止开始
+        box.onmouseout = function() {
+            timer = setInterval(function() {
+                right.onclick();
+            }, 1000);
+        };
+        //------------------------------------设置鼠标出去就停止结束
+    }
+</script>
+
+</html>
